@@ -12,10 +12,6 @@ def read_in():
     return json.loads(lines[0])
 
 def main():
-    #get our data as an array from read_in()
-    #lines = sys.stdin.readlines()
-    #lines = json.loads(lines[0])
-
     #create a numpy array
     input_data = np.array(read_in())
 
