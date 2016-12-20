@@ -9,12 +9,12 @@ from sklearn.pipeline import Pipeline
 def read_in():
     lines = sys.stdin.readlines()
     # Since our input would only be having one line, parse our JSON data from that
-    return json.loads(lines[0])
+    lines = json.loads(lines[0])
+    return np.array(lines)
 
 def main():
     #create a numpy array
-    input_data = np.array(read_in())
-
+    input_data = read_in()
 
     stop_Words = stopwords.words('english')
     pipeline = Pipeline([
