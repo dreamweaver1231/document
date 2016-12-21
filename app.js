@@ -266,8 +266,8 @@ const server = app.listen(flint_config.port, () => {
 
 function main(input) {
   
-  let input_data = JSON.stringify([input]);
-  py.stdin.write(input_data);
+  let inputData = JSON.stringify([input]);
+  py.stdin.write(inputData);
   py.stdin.end();
 
   py.stdout.on('data', function(data){
