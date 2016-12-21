@@ -226,7 +226,7 @@ app.use(errorHandler());
 const spawn = require('child_process').spawn;
 const py = spawn('python', ['./document_prediction.py', "Hello"]);
 let dataString = '';
-const test = JSON.stringify(['Print banded betina btm']);
+const input_data = JSON.stringify(['Print banded betina btm']);
 
 /**
  * Start Express server.
@@ -238,9 +238,7 @@ app.listen(app.get('port'), () => {
 });
 
 function main() {
-  console.log('child_process');
-
-  py.stdin.write(test);
+  py.stdin.write(input_data);
   py.stdin.end();
 
   py.stdout.on('data', function(data){
