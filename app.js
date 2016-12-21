@@ -30,12 +30,29 @@ const upload = multer({ dest: path.join(__dirname, 'uploads') });
 dotenv.load({ path: '.env.example' });
 
 /**
+ * flint options
+ */ 
+
+var flint_config = {
+  webhookUrl: 'http://68530e33.ngrok.io/flint',
+  token: 'NmUzZmEyNjEtYjJhYi00N2JhLWJhYjEtYWQ0NTg4MDc3NTc0MzI4NmU4N2YtZGY1',
+  port: 8080
+};
+
+/**
+ * Init Flint
+ */
+const flint = new Flint(flint_config);
+flint.start();
+
+/**
  * Controllers (route handlers).
  */
 const homeController = require('./controllers/home');
 const userController = require('./controllers/user');
 const apiController = require('./controllers/api');
 const contactController = require('./controllers/contact');
+const flintController = require('./controllers/flint');
 
 /**
  * API keys and Passport configuration.
@@ -56,22 +73,6 @@ mongoose.connection.on('error', () => {
   console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
   process.exit();
 });
-
-/**
- * flint options
- */ 
-
-var flint_config = {
-  webhookUrl: 'http://68530e33.ngrok.io/flint',
-  token: 'NmUzZmEyNjEtYjJhYi00N2JhLWJhYjEtYWQ0NTg4MDc3NTc0MzI4NmU4N2YtZGY1',
-  port: 8080
-};
-
-/**
- * Init Flint
- */
-const flint = new Flint(flint_config);
-flint.start();
 
 /**
  * Express configuration.
@@ -133,10 +134,10 @@ app.use((req, res, next) => {
 });
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
 
-// say hello 
-flint.hears('hello', function(bot, trigger) {
-  bot.say('hello', trigger.args);
-});
+/**
+ * flint routes
+ */
+flint.hears('hello', flintController.getHello);
 
 /**
  * Primary app routes.
