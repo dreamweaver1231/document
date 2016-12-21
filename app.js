@@ -19,6 +19,8 @@ const expressValidator = require('express-validator');
 const expressStatusMonitor = require('express-status-monitor');
 const sass = require('node-sass-middleware');
 const multer = require('multer');
+const Flint = require('node-flint');
+const webhook = require('node-flint/webhook');
 
 const upload = multer({ dest: path.join(__dirname, 'uploads') });
 
@@ -56,6 +58,22 @@ mongoose.connection.on('error', () => {
 });
 
 /**
+ * flint options
+ */ 
+
+var flint_config = {
+  webhookUrl: 'http://68530e33.ngrok.io/flint',
+  token: 'NmUzZmEyNjEtYjJhYi00N2JhLWJhYjEtYWQ0NTg4MDc3NTc0MzI4NmU4N2YtZGY1',
+  port: 8080
+};
+
+/**
+ * Init Flint
+ */
+const flint = new Flint(flint_config);
+flint.start();
+
+/**
  * Express configuration.
  */
 app.set('port', process.env.PORT || 3000);
@@ -84,7 +102,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use((req, res, next) => {
+  console.log(req.path);
   if (req.path === '/api/upload') {
+    next();
+  } else if (req.path === '/flint') {
     next();
   } else {
     lusca.csrf()(req, res, next);
@@ -112,6 +133,11 @@ app.use((req, res, next) => {
 });
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
 
+// say hello 
+flint.hears('hello', function(bot, trigger) {
+  bot.say('hello', trigger.args);
+});
+
 /**
  * Primary app routes.
  */
@@ -132,6 +158,7 @@ app.post('/account/profile', passportConfig.isAuthenticated, userController.post
 app.post('/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
 app.post('/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
 app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userController.getOauthUnlink);
+app.post('/flint', webhook(flint));
 
 /**
  * API examples routes.
@@ -226,18 +253,20 @@ app.use(errorHandler());
 const spawn = require('child_process').spawn;
 const py = spawn('python', ['./document_prediction.py', "Hello"]);
 let dataString = '';
-const input_data = JSON.stringify(['Print banded betina btm']);
+// const input_data = JSON.stringify(['Print banded betina btm']);
 
 /**
  * Start Express server.
  */
-app.listen(app.get('port'), () => {
-  main();
+const server = app.listen(flint_config.port, () => {
+  flint.debug('Flint listening on port %s', flint_config.port);
   console.log('%s App is running at http://localhost:%d in %s mode', chalk.green('✓'), app.get('port'), app.get('env')); 
   console.log('  Press CTRL-C to stop\n');
 });
 
-function main() {
+function main(input) {
+  
+  let input_data = JSON.stringify([input]);
   py.stdin.write(input_data);
   py.stdin.end();
 
@@ -247,6 +276,15 @@ function main() {
   py.stdout.on('end', function(){
     console.log(dataString);
   });
+
 }
+
+process.on('SIGINT', function() {
+  flint.debug('stoppping...');
+  server.close();
+  flint.stop().then(function() {
+    process.exit();
+  });
+});
 
 module.exports = app;
