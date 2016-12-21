@@ -37,7 +37,8 @@ def main():
     result = pd.concat([df, df1], axis=1)
     result.sort_values(by='probability', ascending=False, inplace=True)
 
-    print(result.head(5))
+    result = result['description'].head(5)
+    print(result.to_json(orient='values'))
     sys.stdout.flush()
 
 # Start process

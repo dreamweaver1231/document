@@ -43,6 +43,7 @@ var flint_config = {
  * Init Flint
  */
 const flint = new Flint(flint_config);
+flint.messageFormat = 'markdown';
 flint.start();
 
 /**
@@ -137,7 +138,7 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }))
 /**
  * flint routes
  */
-flint.hears('hello', flintController.getHello);
+flint.hears('search', flintController.getSearch);
 
 /**
  * Primary app routes.
@@ -247,15 +248,6 @@ app.get('/auth/pinterest/callback', passport.authorize('pinterest', { failureRed
  */
 app.use(errorHandler());
 
-
-/**
- * Code to read python script
- */
-const spawn = require('child_process').spawn;
-const py = spawn('python', ['./document_prediction.py', "Hello"]);
-let dataString = '';
-// const input_data = JSON.stringify(['Print banded betina btm']);
-
 /**
  * Start Express server.
  */
@@ -264,21 +256,6 @@ const server = app.listen(flint_config.port, () => {
   console.log('%s App is running at http://localhost:%d in %s mode', chalk.green('✓'), app.get('port'), app.get('env')); 
   console.log('  Press CTRL-C to stop\n');
 });
-
-function main(input) {
-  
-  let inputData = JSON.stringify([input]);
-  py.stdin.write(inputData);
-  py.stdin.end();
-
-  py.stdout.on('data', function(data){
-    dataString += data.toString();
-  });
-  py.stdout.on('end', function(){
-    console.log(dataString);
-  });
-
-}
 
 process.on('SIGINT', function() {
   flint.debug('stoppping...');
