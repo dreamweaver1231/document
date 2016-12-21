@@ -34,7 +34,7 @@ dotenv.load({ path: '.env.example' });
  */ 
 
 var flint_config = {
-  webhookUrl: 'http://68530e33.ngrok.io/flint',
+  webhookUrl: 'http://6c3ded3b.ngrok.io/flint',
   token: 'NmUzZmEyNjEtYjJhYi00N2JhLWJhYjEtYWQ0NTg4MDc3NTc0MzI4NmU4N2YtZGY1',
   port: 8080
 };
@@ -252,7 +252,7 @@ app.use(errorHandler());
  * Start Express server.
  */
 const server = app.listen(flint_config.port, () => {
-  flint.debug('Flint listening on port %s', flint_config.port);
+  //flint.debug('Flint listening on port %s', flint_config.port);
   console.log('%s App is running at http://localhost:%d in %s mode', chalk.green('✓'), app.get('port'), app.get('env')); 
   console.log('  Press CTRL-C to stop\n');
 });

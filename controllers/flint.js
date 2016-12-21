@@ -3,12 +3,14 @@
  */
 const _ = require('lodash');
 const spawn = require('child_process').spawn;
-const py = spawn('python', ['./document_prediction.py']);
-let dataString = '';
-// Print banded betina btm
-let input_data = '';
+
+let py, dataString, input_data;
 
 exports.getSearch = (bot, trigger) => {
+  py = spawn('python', ['./document_prediction.py']);
+  dataString = '';
+  input_data = '';
+
   console.log(trigger.args)
   
   input_data = _.drop(trigger.args);
@@ -27,8 +29,6 @@ exports.getSearch = (bot, trigger) => {
 
 function main(inputData) {
   return new Promise(function(resolve, reject){
-    py.stdin.write(inputData);
-    py.stdin.end();
 
     py.stdout.on('data', function(data){
         dataString += data.toString();
@@ -37,5 +37,12 @@ function main(inputData) {
         console.log(dataString);
         resolve(dataString);
     });
+    py.stdout.on('error', function(){
+        console.log('error');
+        reject('error');
+    });
+
+    py.stdin.write(inputData);
+    py.stdin.end();
   })
 }
