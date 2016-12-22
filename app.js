@@ -258,22 +258,21 @@ app.use(errorHandler());
  */
 const server = app.listen(flint_config.port, () => {
   flint.debug('Flint listening on port %s', flint_config.port);
-  console.log('%s App is running at http://localhost:%d in %s mode', chalk.green('✓'), app.get('port'), app.get('env')); 
-  console.log('  Press CTRL-C to stop\n');
-});
+  console.log('%s App is running at http://localhost:%d in %s mode', chalk.green('✓'), app.get('port'), app.get('env'));
+  console.log('Press CTRL-C to stop');
+})
 
 flint.on('log', data => {
     console.log(data)
 });
 
 flint.on('mentioned', (bot, message) => {
-    console.log(message.text, message.personEmail, message.roomTitle, message.created)
+    console.log(message.personEmail)
 });
 
 flint.on('personEnters', bot => {
     let str = "Please find below a list of commands you can use: \n" +
         "- Search \<Query\>.";
-
     bot.say(str);
 });
 
