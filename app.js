@@ -262,14 +262,6 @@ const server = app.listen(flint_config.port, () => {
   console.log('Press CTRL-C to stop');
 })
 
-flint.on('log', data => {
-    console.log(data)
-});
-
-flint.on('mentioned', (bot, message) => {
-    console.log(message.personEmail)
-});
-
 flint.on('personEnters', bot => {
     let str = "Please find below a list of commands you can use: \n" +
         "- Search \<Query\>.";
