@@ -34,9 +34,9 @@ dotenv.load({ path: '.env.example' });
  */ 
 
 var flint_config = {
-  webhookUrl: 'http://f7277ea9.ngrok.io/flint',
-  token: 'NmUzZmEyNjEtYjJhYi00N2JhLWJhYjEtYWQ0NTg4MDc3NTc0MzI4NmU4N2YtZGY1',
-  port: 8080
+  webhookUrl: process.env.HOOK_URL,
+  token: process.env.BOT_TOKEN,
+  port: process.env.PORT
 };
 
 /**

@@ -34,7 +34,7 @@ exports.getSearch = (bot, trigger) => {
         })
 };
 
-function main(inputData) {
+const main = (inputData) => {
   return new Promise(function(resolve, reject){
 
     py.stdout.on('data', function(data){
