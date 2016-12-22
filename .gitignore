@@ -1,7 +1,6 @@
 lib-cov
 *.seed
 *.log
-*.csv
 *.dat
 *.out
 *.pid
@@ -31,3 +30,6 @@ bower_components
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Upload directory
+uploads/
