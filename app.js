@@ -34,7 +34,7 @@ dotenv.load({ path: '.env.example' });
  */ 
 
 var flint_config = {
-  webhookUrl: 'http://6c3ded3b.ngrok.io/flint',
+  webhookUrl: 'http://f7277ea9.ngrok.io/flint',
   token: 'NmUzZmEyNjEtYjJhYi00N2JhLWJhYjEtYWQ0NTg4MDc3NTc0MzI4NmU4N2YtZGY1',
   port: 8080
 };
@@ -138,7 +138,12 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }))
 /**
  * flint routes
  */
+flint.hears('hello', flintController.getHello);
+flint.hears('help', flintController.getHelp);
 flint.hears('search', flintController.getSearch);
+flint.hears(/.*/, function(bot, trigger) {
+    bot.say('You see a shimmering light, but it is growing dim.');
+}, 20);
 
 /**
  * Primary app routes.
@@ -252,9 +257,24 @@ app.use(errorHandler());
  * Start Express server.
  */
 const server = app.listen(flint_config.port, () => {
-  //flint.debug('Flint listening on port %s', flint_config.port);
+  flint.debug('Flint listening on port %s', flint_config.port);
   console.log('%s App is running at http://localhost:%d in %s mode', chalk.green('✓'), app.get('port'), app.get('env')); 
   console.log('  Press CTRL-C to stop\n');
+});
+
+flint.on('log', data => {
+    console.log(data)
+});
+
+flint.on('mentioned', (bot, message) => {
+    console.log(message.text, message.personEmail, message.roomTitle, message.created)
+});
+
+flint.on('personEnters', bot => {
+    let str = "Please find below a list of commands you can use: \n" +
+        "- Search \<Query\>.";
+
+    bot.say(str);
 });
 
 process.on('SIGINT', function() {

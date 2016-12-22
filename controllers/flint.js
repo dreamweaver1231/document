@@ -3,15 +3,22 @@
  */
 const _ = require('lodash');
 const spawn = require('child_process').spawn;
-
 let py, dataString, input_data;
+
+exports.getHello = (bot, trigger) => {
+    bot.say("Hello %s! How may i help you today. To know list of commands you can type **Help**.", trigger.personDisplayName);
+};
+
+exports.getHelp = (bot, trigger) => {
+    let str = "Please find below a list of commands you can use: \n" +
+        "- Search \<Query\>.";
+
+    bot.say(str);
+};
 
 exports.getSearch = (bot, trigger) => {
   py = spawn('python', ['./document_prediction.py']);
   dataString = '';
-  input_data = '';
-
-  console.log(trigger.args)
   
   input_data = _.drop(trigger.args);
   input_data = _.join(input_data, ' ');

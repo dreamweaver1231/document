@@ -8,7 +8,7 @@ module.exports = function(flint) {
   flint.on('messageCreated', function(message, bot) {
     console.log('"%s" said "%s" in room "%s"', message.personEmail, message.text, bot.myroom.title);
   });
-  flint.on('log', function(message, bot) {
-    console.log('Hello');
+  flint.on('log', function(log) {
+    console.log(log);
   });
 };
