@@ -34,7 +34,6 @@ exports.getSearch = (bot, trigger) => {
             _.forEach(result, function(value, key) {
                 prob.push(value[1])
             });
-            console.log(prob);
             var length = (_.uniq(prob)).length
             if(length == 1){
                 bot.say("Sorry i could not find any relevant information");

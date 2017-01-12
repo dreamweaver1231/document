@@ -18,7 +18,7 @@ def main():
 
     stop_Words = stopwords.words('english')
     pipeline = Pipeline([
-        ('bow', CountVectorizer(stop_words=stop_Words)),
+        ('bow', CountVectorizer(ngram_range=(1, 3))),
         ('tfidf', TfidfTransformer()),
         ('classifier', MultinomialNB())
     ])
@@ -26,7 +26,7 @@ def main():
     search_criteria = input_data
 
     stop_Words = stopwords.words('english')
-    df = pd.read_csv('document-data.csv')
+    df = pd.read_csv('teamspace-data.csv')
 
     x_data = df['description']
     y_data = df['id']
@@ -37,7 +37,7 @@ def main():
     result = pd.concat([df, df1], axis=1)
     result.sort_values(by='probability', ascending=False, inplace=True)
 
-    result = result[['description', 'probability']].head(5)
+    result = result[['description', 'probability']].head(10)
     print(result.to_json(orient='values'))
     sys.stdout.flush()
 
