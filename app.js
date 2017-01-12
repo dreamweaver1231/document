@@ -43,7 +43,7 @@ var flint_config = {
  * Init Flint
  */
 const flint = new Flint(flint_config);
-flint.messageFormat = 'markdown';
+//flint.messageFormat = 'markdown';
 flint.start();
 
 /**

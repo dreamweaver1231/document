@@ -3,14 +3,14 @@
  */
 const _ = require('lodash');
 const spawn = require('child_process').spawn;
-let py, dataString, input_data;
+let py, dataString, input_data, prob, length;
 
 exports.getHello = (bot, trigger) => {
-    bot.say("Hello %s! How may i help you today. To know list of commands you can type **Help**.", trigger.personDisplayName);
+    bot.say("Hello %s! How may i help you today. To know list of commands you can type <b>Help</b>.", trigger.personDisplayName);
 };
 
 exports.getHelp = (bot, trigger) => {
-    let str = "Please find below a list of commands you can use: \n" +
+    let str = "Please find below a list of commands you can use: <br/>" +
         "- Search \<Query\>.";
 
     bot.say(str);
@@ -19,18 +19,31 @@ exports.getHelp = (bot, trigger) => {
 exports.getSearch = (bot, trigger) => {
   py = spawn('python', ['./document_prediction.py']);
   dataString = '';
-  
+  prob = [];
+  length = -1;
+
   input_data = _.drop(trigger.args);
   input_data = _.join(input_data, ' ');
 
   let inputData = JSON.stringify([input_data]);
   main(inputData)
     .then(result => {
-            title = 'Please find below a list of top 5 results i found: \n - '
-            result = JSON.parse(result)
-            result = _.join(result, '\n - ');
-            result = title + result;
-            bot.say(result);
+
+            result = JSON.parse(result);
+
+            _.forEach(result, function(value, key) {
+                prob.push(value[1])
+            });
+            console.log(prob);
+            var length = (_.uniq(prob)).length
+            if(length == 1){
+                bot.say("Sorry i could not find any relevant information");
+            }else{
+                title = 'Please find below a list of top 5 results i found: \n <br/> - '
+                result = _.join(result, '<br> - ');
+                result = title + result;
+                bot.say(result);
+            }
         })
 };
 
