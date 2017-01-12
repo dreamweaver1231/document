@@ -3,7 +3,7 @@
  */
 const _ = require('lodash');
 const spawn = require('child_process').spawn;
-let py, dataString, input_data, prob, length;
+let py, dataString, input_data, prob, length, info;
 
 exports.getHello = (bot, trigger) => {
     bot.say("Hello %s! How may i help you today. To know list of commands you can type <b>Help</b>.", trigger.personDisplayName);
@@ -21,6 +21,7 @@ exports.getSearch = (bot, trigger) => {
   dataString = '';
   prob = [];
   length = -1;
+  info = [];
 
   input_data = _.drop(trigger.args);
   input_data = _.join(input_data, ' ');
@@ -32,14 +33,15 @@ exports.getSearch = (bot, trigger) => {
             result = JSON.parse(result);
 
             _.forEach(result, function(value, key) {
-                prob.push(value[1])
+                prob.push(value[1]);
+                info.push(value[0]);
             });
             var length = (_.uniq(prob)).length
             if(length == 1){
                 bot.say("Sorry i could not find any relevant information");
             }else{
-                title = 'Please find below a list of top 5 results i found: \n <br/> - '
-                result = _.join(result, '<br> - ');
+                title = 'Please find below a list of top 5 results i found: \n <br/><br/> - '
+                result = _.join(info, '<br/><br/> - ');
                 result = title + result;
                 bot.say(result);
             }
