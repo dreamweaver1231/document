@@ -40,7 +40,7 @@ exports.getSearch = (bot, trigger) => {
             if(length == 1){
                 bot.say("Sorry i could not find any relevant information");
             }else{
-                title = 'Please find below a list of top 5 results i found: \n <br/><br/> - '
+                title = 'Please find below a list of top 10 results i found: \n <br/><br/> - '
                 result = _.join(info, '<br/><br/> - ');
                 result = title + result;
                 bot.say(result);
