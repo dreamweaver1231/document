@@ -1,6 +1,5 @@
 import sys, json, pandas as pd
 import numpy as np
-from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.naive_bayes import MultinomialNB
@@ -16,7 +15,6 @@ def main():
     #create a numpy array
     input_data = read_in()
 
-    stop_Words = stopwords.words('english')
     pipeline = Pipeline([
         ('bow', CountVectorizer(ngram_range=(1, 3))),
         ('tfidf', TfidfTransformer()),
@@ -24,8 +22,6 @@ def main():
     ])
 
     search_criteria = input_data
-
-    stop_Words = stopwords.words('english')
     df = pd.read_csv('teamspace-data.csv')
 
     x_data = df['description']
