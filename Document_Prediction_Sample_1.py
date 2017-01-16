@@ -6,7 +6,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 
 pipeline = Pipeline([
-    ('bow', CountVectorizer(stop_words=stop_Words)),
+    ('bow', CountVectorizer()),
     ('tfidf', TfidfTransformer()),
     ('classifier', MultinomialNB())
 ])
