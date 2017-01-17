@@ -1,0 +1,10 @@
+{
+  "apps": [{
+    "name": "chatbot",
+    "script": "./app.js",
+    "error_file": "../logs/app.err.log",
+    "out_file": "../logs/app.out.log",
+    "instances" : "max",
+    "exec_mode" : "cluster"
+  }]
+}
