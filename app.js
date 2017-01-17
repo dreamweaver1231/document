@@ -10,10 +10,10 @@ const chalk = require('chalk');
 const errorHandler = require('errorhandler');
 const lusca = require('lusca');
 const dotenv = require('dotenv');
-//const MongoStore = require('connect-mongo')(session);
+// const MongoStore = require('connect-mongo')(session);
 const flash = require('express-flash');
 const path = require('path');
-//const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const passport = require('passport');
 const expressValidator = require('express-validator');
 const expressStatusMonitor = require('express-status-monitor');
@@ -21,30 +21,14 @@ const sass = require('node-sass-middleware');
 const multer = require('multer');
 const Flint = require('node-flint');
 const webhook = require('node-flint/webhook');
+const ngrok = require('ngrok');
 
 const upload = multer({ dest: path.join(__dirname, 'uploads') });
-
+let flint;
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
 dotenv.load({ path: '.env.example' });
-
-/**
- * flint options
- */ 
-
-var flint_config = {
-  webhookUrl: process.env.HOOK_URL,
-  token: process.env.BOT_TOKEN,
-  port: process.env.PORT
-};
-
-/**
- * Init Flint
- */
-const flint = new Flint(flint_config);
-//flint.messageFormat = 'markdown';
-flint.start();
 
 /**
  * Controllers (route handlers).
@@ -71,7 +55,7 @@ const app = express();
 // mongoose.Promise = global.Promise;
 // mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI);
 // mongoose.connection.on('error', () => {
-//   console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
+// console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
 //   process.exit();
 // });
 
@@ -128,22 +112,12 @@ app.use((req, res, next) => {
       !req.path.match(/\./)) {
     req.session.returnTo = req.path;
   } else if (req.user &&
-      req.path == '/account') {
+      req.path === '/account') {
     req.session.returnTo = req.path;
   }
   next();
 });
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
-
-/**
- * flint routes
- */
-flint.hears('hello', flintController.getHello);
-flint.hears('help', flintController.getHelp);
-flint.hears('search', flintController.getSearch);
-flint.hears(/.*/, function(bot, trigger) {
-    bot.say('You see a shimmering light, but it is growing dim.');
-}, 20);
 
 /**
  * Primary app routes.
@@ -165,7 +139,6 @@ app.post('/account/profile', passportConfig.isAuthenticated, userController.post
 app.post('/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
 app.post('/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
 app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userController.getOauthUnlink);
-app.post('/flint', webhook(flint));
 
 /**
  * API examples routes.
@@ -256,24 +229,53 @@ app.use(errorHandler());
 /**
  * Start Express server.
  */
-const server = app.listen(flint_config.port, () => {
-  flint.debug('Flint listening on port %s', flint_config.port);
+const server = app.listen(process.env.PORT, () => {
   console.log('%s App is running at http://localhost:%d in %s mode', chalk.green('✓'), app.get('port'), app.get('env'));
   console.log('Press CTRL-C to stop');
-})
+  ngrok.connect(process.env.PORT, (err, url) => {
+    /**
+     * flint options
+     */
 
-flint.on('personEnters', bot => {
-    let str = "Please find below a list of commands you can use: \n" +
-        "- Search \<Query\>.";
-    bot.say(str);
-});
+    console.log(`ngrok port ${url}`);
+    const flintConfig = {
+      webhookUrl: `${url}/flint`,
+      token: process.env.BOT_TOKEN,
+      port: process.env.PORT
+    };
 
-process.on('SIGINT', function() {
-  flint.debug('stoppping...');
-  server.close();
-  flint.stop().then(function() {
-    process.exit();
+    /**
+     * Init Flint
+     */
+    flint = new Flint(flintConfig);
+    flint.start();
+    flint.debug('Flint listening on port %s', process.env.PORT);
+    /**
+     * flint routes
+     */
+    flint.hears('hello', flintController.getHello);
+    flint.hears('help', flintController.getHelp);
+    flint.hears('search', flintController.getSearch);
+    flint.hears(/.*/, (bot) => {
+      bot.say('You see a shimmering light, but it is growing dim.');
+    }, 20);
+
+    app.post('/flint', webhook(flint));
+  });
+
+  process.on('SIGINT', () => {
+    flint.debug('stoppping...');
+    server.close();
+    flint.stop().then(() => {
+      process.exit();
+    });
   });
 });
+
+// flint.on('personEnters', bot => {
+//     let str = "Please find below a list of commands you can use: \n" +
+//         "- Search \<Query\>.";
+//     bot.say(str);
+// });
 
 module.exports = app;
