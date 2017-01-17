@@ -236,6 +236,9 @@ const server = app.listen(process.env.PORT, () => {
     /**
      * flint options
      */
+    if (err) {
+      return console.log('error occured', err);
+    }
 
     console.log(`ngrok port ${url}`);
     const flintConfig = {
