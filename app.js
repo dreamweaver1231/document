@@ -34,7 +34,7 @@ dotenv.load({ path: '.env.example' });
  */ 
 
 var flint_config = {
-  webhookUrl: process.env.HOOK_URL,
+  webhookUrl: process.env.HOOK_URL + '/flint',
   token: process.env.BOT_TOKEN,
   port: process.env.PORT
 };
