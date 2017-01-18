@@ -1,7 +1,7 @@
 {
   "apps": [{
     "name": "chatbot",
-    "script": "./app.js",
+    "script": "./app_local.js",
     "error_file": "../logs/app.err.log",
     "out_file": "../logs/app.out.log",
     "instances" : "max",
